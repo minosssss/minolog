@@ -1,33 +1,52 @@
 package com.minolog.api.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.minolog.api.domain.Post;
 import com.minolog.api.request.PostCreate;
-import com.minolog.api.response.ValidationErrorResponse;
+import com.minolog.api.response.PostResponse;
+import com.minolog.api.service.PostService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class PostController {
 
-    @PostMapping("/posts")
-    public ResponseEntity<?> post(@RequestBody @Valid PostCreate params, BindingResult result) {
-        if (result.hasErrors()) {
-            ValidationErrorResponse errorResponse = new ValidationErrorResponse();
-            for (FieldError fieldError : result.getFieldErrors()) {
-                errorResponse.addFieldError(fieldError.getField(), fieldError.getDefaultMessage());
-            }
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+    private final PostService postService;
+    private final ObjectMapper objectMapper;
 
-        log.info("params={}", params.toString());
-        return ResponseEntity.ok("Hello World");
+    @PostMapping("/posts")
+    public void post(@RequestBody @Valid PostCreate create) {
+        postService.write(create);
+    }
+
+    @GetMapping("/posts/{postId}")
+    public PostResponse get(@PathVariable("postId") Long postId) {
+        return postService.get(postId);
+    }
+
+//    @GetMapping("/posts")
+//    public List<PostResponse> getList() {
+//        return postService.getList();
+//    }
+
+    @GetMapping("/posts")
+    public List<PostResponse> getList(Pageable page) {
+        return postService.getListPageable(page);
+    }
+
+    @GetMapping("/postsTest")
+    public ResponseEntity<?> getPosts(Pageable pageable) {
+        List<PostResponse> posts = postService.getTestPageable(pageable);
+        return ResponseEntity.ok().body(posts);
     }
 }

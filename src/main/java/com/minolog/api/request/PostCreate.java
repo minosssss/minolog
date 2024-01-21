@@ -1,18 +1,27 @@
 package com.minolog.api.request;
 
+import com.minolog.api.domain.Post;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class PostCreate {
 
     @NotBlank
-    public String title;
+    private String title;
 
     @NotBlank
-    public String content;
+    private String content;
+
+    @Builder
+    private PostCreate(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+
+
 }
