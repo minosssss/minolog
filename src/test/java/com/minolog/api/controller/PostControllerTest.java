@@ -152,8 +152,8 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 1페이지 조회")
-    void getPage1() throws Exception {
+    @DisplayName("QueryDSL 글 1페이지 조회")
+    void queryDslGetPage1() throws Exception {
         // given
         List<Post> posts = IntStream.range(1, 31)
                 .mapToObj(i -> {
@@ -167,18 +167,12 @@ class PostControllerTest {
         postRepository.saveAll(posts);
 
         // expected
-        mockMvc.perform(get("/posts?page=1&sort=id,desc&size=3")
+        mockMvc.perform(get("/posts?page=1&perPage=30")
                         .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(3)))
-//                .andExpect(jsonPath("$[0].title", is("foo1"))) // Check first post's title
-//                .andExpect(jsonPath("$[0].content", is("bar1"))) // Check first post's content
-//                .andExpect(jsonPath("$[1].title", is("foo2"))) // Check second post's title
-//                .andExpect(jsonPath("$[1].content", is("bar2"))) // Check second post's content
-//                .andExpect(jsonPath("$[2].title", is("foo3"))) // Check third post's title
-//                .andExpect(jsonPath("$[2].content", is("bar3"))) // Check third post's content
+                .andExpect(jsonPath("$", hasSize(30)))
                 .andDo(print());
 
     }

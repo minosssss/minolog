@@ -4,6 +4,7 @@ import com.minolog.api.domain.Post;
 import com.minolog.api.exception.PostNotFound;
 import com.minolog.api.repository.PostRepository;
 import com.minolog.api.request.PostCreate;
+import com.minolog.api.request.PostSearch;
 import com.minolog.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,14 +49,15 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    public List<PostResponse> getTestPageable(Pageable page) {
+
+    public List<PostResponse> getListPageable(Pageable page) {
         return postRepository.findAll(page).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
     }
 
-    public List<PostResponse> getListPageable(Pageable page) {
-        return postRepository.findAll(page).stream()
+    public List<PostResponse> getList(PostSearch postSearch) {
+        return postRepository.getList(postSearch).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
     }

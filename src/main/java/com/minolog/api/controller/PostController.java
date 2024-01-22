@@ -3,6 +3,7 @@ package com.minolog.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minolog.api.domain.Post;
 import com.minolog.api.request.PostCreate;
+import com.minolog.api.request.PostSearch;
 import com.minolog.api.response.PostResponse;
 import com.minolog.api.service.PostService;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,19 +36,9 @@ public class PostController {
         return postService.get(postId);
     }
 
-//    @GetMapping("/posts")
-//    public List<PostResponse> getList() {
-//        return postService.getList();
-//    }
-
     @GetMapping("/posts")
-    public List<PostResponse> getList(Pageable page) {
-        return postService.getListPageable(page);
-    }
-
-    @GetMapping("/postsTest")
-    public ResponseEntity<?> getPosts(Pageable pageable) {
-        List<PostResponse> posts = postService.getTestPageable(pageable);
+    public ResponseEntity<?> getPosts(@ModelAttribute PostSearch postSearch) {
+        List<PostResponse> posts = postService.getList(postSearch);
         return ResponseEntity.ok().body(posts);
     }
 }

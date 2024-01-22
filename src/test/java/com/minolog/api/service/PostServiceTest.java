@@ -3,6 +3,7 @@ package com.minolog.api.service;
 import com.minolog.api.domain.Post;
 import com.minolog.api.repository.PostRepository;
 import com.minolog.api.request.PostCreate;
+import com.minolog.api.request.PostSearch;
 import com.minolog.api.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -125,5 +126,33 @@ class PostServiceTest {
         // then
         Assertions.assertNotNull(postList);
         assertEquals(postList.size(), 5);
+    }
+
+    /**
+     * QueryDSL 적용
+     */
+    @Test
+    @DisplayName("QueryDSL Page조회 / 10개")
+    void queryDslGetPageList() {
+        // given
+        List<Post> posts = IntStream.range(0, 20)
+                .mapToObj(i -> {
+                    return Post.builder()
+                            .title("제목-" + i)
+                            .content("내용-" + i)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        postRepository.saveAll(posts);
+
+        PostSearch search = PostSearch.builder().build();
+        // when
+        List<PostResponse> postList = postService.getList(search);
+
+        // then
+        Assertions.assertNotNull(postList);
+        assertEquals(postList.size(), 10);
+        assertEquals("제목-19", postList.get(0).getTitle());
     }
 }
