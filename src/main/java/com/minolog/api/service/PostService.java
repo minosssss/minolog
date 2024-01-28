@@ -1,15 +1,18 @@
 package com.minolog.api.service;
 
 import com.minolog.api.domain.Post;
+import com.minolog.api.domain.PostEditor;
 import com.minolog.api.exception.PostNotFound;
 import com.minolog.api.repository.PostRepository;
 import com.minolog.api.request.PostCreate;
+import com.minolog.api.request.PostEdit;
 import com.minolog.api.request.PostSearch;
 import com.minolog.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,5 +63,24 @@ public class PostService {
         return postRepository.getList(postSearch).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public PostResponse edit(Long id, PostEdit postEdit) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(PostNotFound::new);
+
+        PostEditor.PostEditorBuilder postEditorBuilder = post.toEditor();
+        PostEditor postEditor = postEditorBuilder
+                .title(postEdit.getTitle())
+                .content(postEdit.getContent())
+                .build();
+        post.edit(postEditor);
+        return new PostResponse(post);
+    }
+
+    public void delete(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(PostNotFound::new);;
+        postRepository.delete(post);
     }
 }

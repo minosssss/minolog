@@ -1,11 +1,14 @@
 package com.minolog.api.service;
 
 import com.minolog.api.domain.Post;
+import com.minolog.api.exception.PostNotFound;
 import com.minolog.api.repository.PostRepository;
 import com.minolog.api.request.PostCreate;
+import com.minolog.api.request.PostEdit;
 import com.minolog.api.request.PostSearch;
 import com.minolog.api.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,11 @@ class PostServiceTest {
 
     @Autowired
     private PostRepository postRepository;
+
+    @BeforeEach
+    void clean() {
+        postRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("글 저장 후 조회")
@@ -154,5 +162,50 @@ class PostServiceTest {
         Assertions.assertNotNull(postList);
         assertEquals(postList.size(), 10);
         assertEquals("제목-19", postList.get(0).getTitle());
+    }
+
+    @Test
+    @DisplayName("글 제목 수정")
+    void postEditTitle() {
+        // given
+        Post post = Post.builder().title("농농").content("아루미").build();
+
+
+        postRepository.save(post);
+        PostEdit editPost = PostEdit.builder().title("마이노").build();
+        // when
+        postService.edit(post.getId(), editPost);
+        // then
+        Post post1 = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + post.getId()));
+        assertEquals(post1.getTitle(), "마이노");
+    }
+
+    @Test
+    @DisplayName("글 삭제")
+    void postDelete() {
+        // given
+        Post post = Post.builder().title("농농").content("호우").build();
+        postRepository.save(post);
+
+        // when
+        postService.delete(post.getId());
+        // then
+        assertEquals(0, postRepository.count());
+    }
+
+
+    @Test
+    @DisplayName("글 작성")
+    void writePostNoMatchIdOrNotHavePost() {
+
+        // given
+        Post post = Post.builder().title("농농").content("호우").build();
+        postRepository.save(post);
+
+        // expected
+        Assertions.assertThrows(PostNotFound.class, () -> {
+            postService.get(post.getId() + 1L);
+        });
     }
 }
