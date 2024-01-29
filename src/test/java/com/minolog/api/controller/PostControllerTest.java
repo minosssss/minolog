@@ -227,8 +227,8 @@ class PostControllerTest {
     void handleException() throws Exception {
         // given
         Post post = Post.builder()
-                .title("농농")
-                .content("호우")
+                .title("foo")
+                .content("bar")
                 .build();
 
         Post save = postRepository.save(post);

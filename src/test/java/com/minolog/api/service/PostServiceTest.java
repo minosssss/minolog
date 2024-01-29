@@ -161,7 +161,7 @@ class PostServiceTest {
         // then
         Assertions.assertNotNull(postList);
         assertEquals(postList.size(), 10);
-        assertEquals("제목-19", postList.get(0).getTitle());
+        assertEquals("제목-0", postList.get(0).getTitle());
     }
 
     @Test
