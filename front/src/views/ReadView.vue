@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {defineProps, onMounted, ref} from "vue";
+import { defineProps, onMounted, ref } from "vue";
 import axios from "axios";
-import {useRouter} from "vue-router";
+import { useRouter } from "vue-router";
 
 const props = defineProps({
   postId: {
@@ -19,7 +19,7 @@ const post = ref({
 const router = useRouter();
 
 const moveToEdit = () => {
-  router.push({name: "edit", params: {postId: props.postId}});
+  router.push({ name: "edit", params: { postId: props.postId } });
 };
 
 onMounted(() => {
