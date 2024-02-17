@@ -88,7 +88,7 @@ public class PostControllerDocTest {
         String json = objectMapper.writeValueAsString(request);
 
         // expected
-        mockMvc.perform(post("/posts")
+        mockMvc.perform(post("/posts?auth=minolog")
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON)
                         .content(json))

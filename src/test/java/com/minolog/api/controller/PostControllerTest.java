@@ -68,9 +68,6 @@ class PostControllerTest {
                 .andDo(print());
     }
 
-
-
-
     @Test
     @DisplayName("POST /posts 요청 시 ValidError 리턴")
     void whenPostInvalidDataThrowErrors() throws Exception {
@@ -89,11 +86,10 @@ class PostControllerTest {
     void whenPostDataIsOk() throws Exception {
         PostCreate invalidRequest = PostCreate.builder().title("제목").content("내용").build();
         mockMvc.perform(post("/posts")
+                        .header("auth","minolog")
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidRequest))
-                )
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.title").value("제목"))
                 .andDo(print());;
     }
 

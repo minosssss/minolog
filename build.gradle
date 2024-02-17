@@ -23,7 +23,6 @@ repositories {
     mavenCentral()
 }
 
-
 ext {
     asciidocVersion = "3.0.1"
     snippetsDir = file('build/generated-snippets')
@@ -52,6 +51,10 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-parameters']
 }
 
 clean {
