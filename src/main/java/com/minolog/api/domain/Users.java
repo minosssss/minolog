@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,4 +21,13 @@ public class Users {
     private String email;
     private String password;
     private LocalDateTime createAt;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Session> sessions = new ArrayList<>();
+
+    public void addSession() {
+        sessions.add(Session.builder()
+                .user(this)
+                .build());
+    }
 }

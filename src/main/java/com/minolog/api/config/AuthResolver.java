@@ -2,13 +2,16 @@ package com.minolog.api.config;
 
 import com.minolog.api.config.data.UserSession;
 import com.minolog.api.exception.Unauthorized;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+@Slf4j
 public class AuthResolver implements HandlerMethodArgumentResolver {
     /**
      * 호출되는 Controller의 파라미터 값을 검사하는 콜백 함수
@@ -27,7 +30,19 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
      */
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        String accessToken = webRequest.getHeader("Authorization");
+        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        if (request == null) {
+            log.error("ServletRequest is Null");
+            throw new Unauthorized();
+        }
+        Cookie[] cookies = request.getCookies();
+        if (cookies.length == 0) {
+            log.error("Cookie is Empty");
+            throw new Unauthorized();
+        }
+
+        String accessToken = cookies[0].getValue();
+//        String accessToken = webRequest.getHeader("Authorization");
 
         if (accessToken == null || accessToken.isEmpty()) {
             throw new Unauthorized();
